@@ -1,9 +1,11 @@
 import React from 'react';
+import aboutImage
+    from "../../images/about/intro.jpg";
 
 const About = () => {
     return (
         <section id="about" className="relative w-full h-screen flex items-center justify-end text-white">
-            <img src="/src/images/about/intro.jpg" className="absolute inset-0 w-3/5 h-screen object-cover"/>
+            <img src={aboutImage} className="absolute inset-0 w-3/5 h-screen object-cover"/>
             <div className="relative w-2/3 md:w-2/5 lg:w-1/3 p-5 rounded-lg text-gray-900 m-5">
                 <h2 className="text-4xl font-bold text-gray-900 underline pb-4">Về chúng tôi</h2>
                 <p className="mb-5">
