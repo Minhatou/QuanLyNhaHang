@@ -9,6 +9,7 @@ import News from './components/News/index.jsx';
 import Reservation from './components/Reservation/index.jsx';
 import Info from './components/Info/index.jsx';
 import AdminDashboard from './components/Admin/admindashboard.jsx';
+import AuthForms from './components/Auth/auth';
 import './App.css';
 
 function App() {
@@ -30,6 +31,8 @@ function App() {
                         </>
                     }/>
                     {/* Route for the admin dashboard */}
+                    <Route path="/auth" element={
+                        <AuthForms />} />
                     <Route path="/admin/*" element={<AdminDashboard />} />
                 </Routes>
             </div>

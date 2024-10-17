@@ -1,5 +1,6 @@
 import React from 'react';
 import logo from '../../images/header/restaurant-logo-removebg-preview-dark.png';
+import {Link} from "react-router-dom";
 
 function Header() {
     const scrollToHero = () => {
@@ -37,9 +38,9 @@ function Header() {
                 <a href="#cart" className="text-white hover:text-gray-900">
                     <i className="fas fa-shopping-cart"></i>
                 </a>
-                <a href="#profile" className="text-white hover:text-gray-900">
+                <Link to="/auth" className="text-white hover:text-gray-900">
                     <i className="fas fa-user"></i>
-                </a>
+                </Link>
             </div>
         </header>
     );
