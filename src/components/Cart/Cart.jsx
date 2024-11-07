@@ -8,11 +8,8 @@ const Cart = () => {
         name: '',
         address: '',
         phone: '',
-        city: '',
-        state: ''
     });
     const storedUserId = localStorage.getItem('userID');
-    console.log(storedUserId);
 
     useEffect(() => {
         const fetchCartItems = async () => {
@@ -79,29 +76,30 @@ const Cart = () => {
     };
 
     const handleConfirmTransaction = async () => {
-        const orderDetails = cartItems.map(item => ({
-            menuItemId: item.menuItem.id,
-            quantity: item.quantity,
-            price: item.menuItem.price
-        }));
-
-        const orderPayload = {
-            email: storedUserId, // Assuming email is stored as userID
-            name: userInfo.name,
-            phoneNumber: userInfo.phone,
-            streetAddress: userInfo.address,
-            city: userInfo.city,
-            state: userInfo.state,
-            orderDetail: orderDetails
-        };
-
         try {
-            // Post userId to the payment endpoint
-            await axios.post(`https://localhost:7001/api/Payment`, null, {
-                params: {
-                    userId: storedUserId
-                }
-            });
+            // Fetch the cart data again
+            const response = await axios.get(`https://localhost:7001/api/ShoppingCart?userId=${storedUserId}`);
+            const cartData = response.data.result;
+
+            // Prepare the order payload
+            const orderPayload = {
+                applicationUserId: cartData.applicationUser.id,
+                orderTotal: cartData.cartTotal,
+                itemTotal: 0,
+                paymentIntentId: "0",
+                orderStatus: "Đã thanh toán",
+                email: cartData.applicationUser.email,
+                name: cartData.applicationUser.name,
+                phoneNumber: cartData.applicationUser.phoneNumber,
+                streetAddress: cartData.applicationUser.streetAddress,
+                city: cartData.applicationUser.city,
+                state: cartData.applicationUser.state,
+                orderDetail: cartData.cartItems.$values.map(item => ({
+                    menuItemId: item.menuItem.id,
+                    quantity: item.quantity,
+                    price: item.menuItem.price
+                }))
+            };
 
             // Post the order details to the order endpoint
             await axios.post(`https://localhost:7001/api/Order`, orderPayload);

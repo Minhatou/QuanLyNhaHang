@@ -61,22 +61,22 @@ const Menu = () => {
     };
 
     return (
-        <section id="menu" className="h-screen p-12 flex flex-col items-center justify-center text-left">
-            <div className="w-full p-5 rounded-lg">
-                <h2 className="text-3xl text-gray-900 font-bold mb-5">THỰC ĐƠN</h2>
-                <div className="flex gap-5 mb-5">
+        <section id="menu" className="h-screen p-4 md:p-12 flex flex-col items-center justify-center text-left">
+            <div className="w-full p-5 rounded-lg bg-white shadow">
+                <h2 className="text-2xl md:text-3xl text-gray-900 font-bold mb-5">THỰC ĐƠN</h2>
+                <div className="flex flex-wrap gap-2 md:gap-5 mb-5">
                     {Array.isArray(categories) && categories.map((category) => (
                         <button
                             key={category.id}
                             onClick={() => handleCategoryClick(category.id)}
-                            className={`p-3 rounded-lg ${selectedType === category.id ? 'bg-gray-200' : 'hover:bg-gray-200'} cursor-pointer`}
+                            className={`p-2 md:p-3 rounded-lg ${selectedType === category.id ? 'bg-gray-200' : 'hover:bg-gray-200'} cursor-pointer`}
                         >
                             {category.name}
                         </button>
                     ))}
                 </div>
-                <div className="flex w-full h-[480px]">
-                    <div className="w-2/5 p-5 rounded-lg">
+                <div className="flex flex-col md:flex-row w-full h-auto md:h-[480px]">
+                    <div className="w-full md:w-2/5 p-5 rounded-lg">
                         <div className="flex flex-col gap-5">
                             {menuItems.map((item) => (
                                 <div
@@ -84,10 +84,9 @@ const Menu = () => {
                                     className="p-3 rounded-lg hover:bg-gray-200 cursor-pointer"
                                     onMouseEnter={() => {
                                         setCurrentImage(`${item.imageUrl.replace(/\\/g, '/')}`);
-                                        console.log(`Hovered over image: ${item.imageUrl.replace(/\\/g, '/')}`);
                                     }}
                                 >
-                                    <h3 className="text-xl font-semibold">{item.name}</h3>
+                                    <h3 className="text-lg md:text-xl font-semibold">{item.name}</h3>
                                     <p className="text-sm text-gray-500">{item.description}</p>
                                     <p className="text-lg font-semibold">{item.price}đ</p>
                                     {storedUserId && (
@@ -102,12 +101,12 @@ const Menu = () => {
                             ))}
                         </div>
                     </div>
-                    <div className="w-3/5 flex items-center justify-center">
+                    <div className="w-full md:w-3/5 flex items-center justify-center mt-4 md:mt-0">
                         <img src={currentImage} alt="Menu" className="w-full h-full object-cover rounded-lg"/>
                     </div>
                 </div>
                 {notification && (
-                    <div className="fixed bottom-32 right-4 bg-green-500 text-white p-3 rounded">
+                    <div className="fixed bottom-16 right-4 bg-green-500 text-white p-3 rounded">
                         {notification}
                     </div>
                 )}

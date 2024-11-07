@@ -27,11 +27,11 @@ function Header() {
     };
 
     return (
-        <header className="header flex justify-between items-center p-4 bg-gray-950 z-50 text-white">
+        <header className="header flex flex-row justify-between items-center p-2 md:p-4 bg-gray-950 z-50 text-white">
             <img src={logo} alt="Logo" className="logo cursor-pointer"
                  onClick={() => document.getElementById('hero').scrollIntoView({behavior: 'smooth'})}/>
-            <nav>
-                <ul className="nav flex space-x-4">
+            <nav className="w-full md:w-auto">
+                <ul className="nav flex flex-row space-x-1 md:space-x-2 text-xs md:text-sm">
                     <li className="nav-item cursor-pointer"
                         onClick={() => document.getElementById('about').scrollIntoView({behavior: 'smooth'})}>GIỚI THIỆU
                     </li>
@@ -48,7 +48,7 @@ function Header() {
                     </li>
                 </ul>
             </nav>
-            <div className="icons flex space-x-4 relative">
+            <div className="icons flex space-x-1 md:space-x-2 relative mt-2 md:mt-0 text-xs md:text-sm">
                 {userName && (
                     <Link to="/cart" className="text-white hover:text-gray-900">
                         <i className="fas fa-shopping-cart"></i>

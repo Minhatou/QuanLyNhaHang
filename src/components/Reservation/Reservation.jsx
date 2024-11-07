@@ -6,17 +6,16 @@ const Reservation = () => {
 
     useEffect(() => {
         const storedName = localStorage.getItem('name');
-
         if (storedName) setName(storedName);
     }, []);
 
     return (
-        <section id="reservation" className="w-full h-screen p-12 flex items-center justify-center text-left relative">
+        <section id="reservation" className="w-full h-screen p-4 md:p-12 flex items-center justify-center text-left relative">
             <img src={reservationImage} alt="Reservation" className="w-full h-full object-cover absolute inset-0 z-0" />
-            <div className="w-2/5 bg-gray-950 bg-opacity-65 text-white pt-10 pb-10 pl-10 pr-10 relative z-10">
-                <h1 className="text-3xl font-bold mb-5">ĐẶT BÀN</h1>
-                <h2 className="text-2xl font-bold mb-5">Thông tin đặt bàn</h2>
-                <p className="mb-5">
+            <div className="w-full md:w-2/5 bg-gray-950 bg-opacity-65 text-white p-6 md:p-10 relative z-10">
+                <h1 className="text-2xl md:text-3xl font-bold mb-4 md:mb-5">ĐẶT BÀN</h1>
+                <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-5">Thông tin đặt bàn</h2>
+                <p className="mb-4 md:mb-5">
                     Gọi hotline: (+84) 987 654 321 <br />
                     Hoặc điền form đăng ký, chúng tôi sẽ liên hệ tư vấn cho bạn
                 </p>
