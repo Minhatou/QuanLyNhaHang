@@ -90,12 +90,14 @@ const Menu = () => {
                                     <h3 className="text-xl font-semibold">{item.name}</h3>
                                     <p className="text-sm text-gray-500">{item.description}</p>
                                     <p className="text-lg font-semibold">{item.price}đ</p>
-                                    <button
-                                        onClick={() => handleAddToCart(item.id, item.name)}
-                                        className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
-                                    >
-                                        Thêm vào giỏ hàng
-                                    </button>
+                                    {storedUserId && (
+                                        <button
+                                            onClick={() => handleAddToCart(item.id, item.name)}
+                                            className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
+                                        >
+                                            Thêm vào giỏ hàng
+                                        </button>
+                                    )}
                                 </div>
                             ))}
                         </div>
