@@ -6,11 +6,16 @@ const AdminOrder = () => {
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [error, setError] = useState(null);
+    const storedToken = localStorage.getItem('token');
 
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const response = await axios.get('https://localhost:7001/api/order');
+                const response = await axios.get('https://localhost:7001/api/Order', {
+                    headers: {
+                        'Authorization': `Bearer ${storedToken}`
+                    }
+                });
                 setOrders(response.data.result || []);
             } catch (error) {
                 console.error('Error fetching orders:', error);
@@ -18,18 +23,20 @@ const AdminOrder = () => {
         };
 
         fetchOrders();
-    }, []);
+    }, [storedToken]);
 
-        const fetchOrderDetails = async (orderId) => {
-            try {
-                console.log(orderId);
-                const response = await axios.get(`https://localhost:7001/api/order/${orderId}`);
-                console.log('Selected Order ID:', response.data.result);
-                setSelectedOrder(response.data.result);
-                setIsModalOpen(true);
-            } catch (error) {
+    const fetchOrderDetails = async (orderId) => {
+        try {
+            const response = await axios.get(`https://localhost:7001/api/order/${orderId}`, {
+                headers: {
+                    'Authorization': `Bearer ${storedToken}`
+                }
+            });
+            setSelectedOrder(response.data.result);
+            setIsModalOpen(true);
+        } catch (error) {
             console.error('Error fetching order details:', error);
-            }
+        }
     };
 
     const closeModal = () => {
@@ -78,6 +85,27 @@ const AdminOrder = () => {
                         <p><strong>Order ID:</strong> {selectedOrder.id}</p>
                         <p><strong>Name:</strong> {selectedOrder.name}</p>
                         <p><strong>Phone Number:</strong> {selectedOrder.phoneNumber}</p>
+                        <h3 className="text-xl font-bold mt-4">Order Items</h3>
+                        <table className="min-w-full bg-white mt-2">
+                            <thead>
+                            <tr>
+                                <th className="py-2 px-4 border-b">Item ID</th>
+                                <th className="py-2 px-4 border-b">Item Name</th>
+                                <th className="py-2 px-4 border-b">Quantity</th>
+                                <th className="py-2 px-4 border-b">Price</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {selectedOrder.orderDetail.map(item => (
+                                <tr key={item.menuItemId}>
+                                    <td className="py-2 px-4 border-b">{item.menuItemId}</td>
+                                    <td className="py-2 px-4 border-b">{item.menuItem.name}</td>
+                                    <td className="py-2 px-4 border-b">{item.quantity}</td>
+                                    <td className="py-2 px-4 border-b">{item.price}</td>
+                                </tr>
+                            ))}
+                            </tbody>
+                        </table>
                         <button
                             onClick={closeModal}
                             className="mt-4 bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"

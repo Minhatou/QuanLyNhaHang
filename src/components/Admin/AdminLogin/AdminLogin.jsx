@@ -12,21 +12,22 @@ const AdminLogin = () => {
         setLoginError('');
 
         if (!loginData.username || !loginData.password) {
-            setLoginError('Please fill in all fields');
+            setLoginError('Vui lòng nhập đủ thông tin');
             return;
         }
 
         try {
-            const response = await axios.post('http://localhost:7001/api/auth/login', loginData);
+            const response = await axios.post('https://localhost:7001/api/auth/login', { ...loginData, role: '15a3795a-47d8-49cd-9f74-d1036b3b53f3' });
 
-            // Store JWT token in localStorage
+            // Store JWT token and user's name in localStorage
             localStorage.setItem('adminToken', response.data.token);
-            localStorage.setItem('staffName', response.data.name);
-
-            // Redirect to admin dashboard after successful login
+            localStorage.setItem('adminName', response.data.result.user.name);
+            localStorage.setItem('adminUserName', response.data.result.user.userName);
+            localStorage.setItem('adminUserID', response.data.result.user.id);
+            // Redirect to homepage after successful login
             navigate('/admin/dashboard');
         } catch (error) {
-            setLoginError('Login failed');
+            setLoginError('Tên đăng nhập hoặc mật khẩu không đúng');
         }
     };
 

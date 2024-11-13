@@ -8,7 +8,7 @@ import About from './components/About/About.jsx';
 import Menu from './components/Menu/Menu.jsx';
 import News from './components/News/News.jsx';
 import Reservation from './components/Reservation/Reservation.jsx';
-import Info from './components/Info/index.jsx';
+import Info from './components/Info/Info.jsx';
 import AdminDashboard from './components/Admin/AdminDashboard.jsx';
 import AuthForms from './components/Auth/Auth.jsx';
 import AdminLogin from './components/Admin/AdminLogin/AdminLogin.jsx';

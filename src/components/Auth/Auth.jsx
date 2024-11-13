@@ -25,7 +25,7 @@ const AuthForms = () => {
             const response = await axios.post('https://localhost:7001/api/auth/login', { ...loginData, role: '15a3795a-47d8-49cd-9f74-d1036b3b53f3' });
 
             // Store JWT token and user's name in localStorage
-            localStorage.setItem('token', response.data.token);
+            localStorage.setItem('token', response.data.result.token);
             localStorage.setItem('name', response.data.result.user.name);
             localStorage.setItem('userName', response.data.result.user.userName);
             localStorage.setItem('userID', response.data.result.user.id);

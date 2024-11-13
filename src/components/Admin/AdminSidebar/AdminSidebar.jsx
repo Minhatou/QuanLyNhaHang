@@ -16,7 +16,7 @@ const Sidebar = () => {
     const [staffName, setStaffName] = useState('');
 
     useEffect(() => {
-        const name = localStorage.getItem('staffName');
+        const name = localStorage.getItem('adminName');
         if (name) {
             setStaffName(name);
         }
@@ -25,7 +25,9 @@ const Sidebar = () => {
     const navigate = useNavigate();
     const handleLogout = () => {
         localStorage.removeItem('adminToken');
-        localStorage.removeItem('staffName');
+        localStorage.removeItem('adminName');
+        localStorage.removeItem('adminUserName');
+        localStorage.removeItem('adminUserID');
         navigate('/admin');
     };
 

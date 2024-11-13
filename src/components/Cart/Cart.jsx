@@ -10,18 +10,21 @@ const Cart = () => {
         phone: '',
     });
     const storedUserId = localStorage.getItem('userID');
+    const storedToken = localStorage.getItem('token');
 
     useEffect(() => {
         const fetchCartItems = async () => {
             try {
-                const response = await axios.get(`https://localhost:7001/api/ShoppingCart?userId=${storedUserId}`);
-                setCartItems(response.data.result.cartItems.$values || []);
-                setCartTotal(response.data.result.cartTotal || 0);
-                setUserInfo({
-                    ...userInfo,
-                    name: response.data.result.applicationUser.name || '',
-                    phone: response.data.result.applicationUser.phoneNumber || ''
+                const response = await axios.get(`https://localhost:7001/api/ShoppingCart`, {
+                    params: {
+                        userId: storedUserId
+                    },
+                    headers: {
+                        'Authorization': `Bearer ${storedToken}`
+                    }
                 });
+                setCartItems(response.data.result.cartItems || []);
+                setCartTotal(response.data.result.cartTotal || 0);
             } catch (error) {
                 console.error('Error fetching cart items:', error);
             }
@@ -44,13 +47,22 @@ const Cart = () => {
         try {
             await axios.post(`https://localhost:7001/api/ShoppingCart`, null, {
                 params: {
-                    userId: storedUserId,
                     menuItemId: menuItemId,
-                    updateQuantityBy: -1
+                    updateQuantity: -1
+                },
+                headers: {
+                    'Authorization': `Bearer ${storedToken}`
                 }
             });
-            const response = await axios.get(`https://localhost:7001/api/ShoppingCart?userId=${storedUserId}`);
-            setCartItems(response.data.result.cartItems.$values || []);
+            const response = await axios.get(`https://localhost:7001/api/ShoppingCart`, {
+                params: {
+                    userId: storedUserId
+                },
+                headers: {
+                    'Authorization': `Bearer ${storedToken}`
+                }
+            });
+            setCartItems(response.data.result.cartItems || []);
             setCartTotal(response.data.result.cartTotal || 0);
         } catch (error) {
             console.error('Error removing item from cart:', error);
@@ -61,14 +73,23 @@ const Cart = () => {
         try {
             await axios.post(`https://localhost:7001/api/ShoppingCart`, null, {
                 params: {
-                    userId: storedUserId,
                     menuItemId: menuItemId,
-                    updateQuantityBy: 1
+                    updateQuantity: 1
+                },
+                headers: {
+                    'Authorization': `Bearer ${storedToken}`
                 }
             });
             // Refresh cart items after addition
-            const response = await axios.get(`https://localhost:7001/api/ShoppingCart?userId=${storedUserId}`);
-            setCartItems(response.data.result.cartItems.$values || []);
+            const response = await axios.get(`https://localhost:7001/api/ShoppingCart`, {
+                params: {
+                    userId: storedUserId
+                },
+                headers: {
+                    'Authorization': `Bearer ${storedToken}`
+                }
+            });
+            setCartItems(response.data.result.cartItems || []);
             setCartTotal(response.data.result.cartTotal || 0);
         } catch (error) {
             console.error('Error adding item to cart:', error);

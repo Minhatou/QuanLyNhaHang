@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from "axios";
+import axios from 'axios';
 
 const Menu = () => {
     const [categories, setCategories] = useState([]);
@@ -8,32 +8,31 @@ const Menu = () => {
     const [currentImage, setCurrentImage] = useState('/images/menuitem/spring roll.jpg');
     const [notification, setNotification] = useState('');
     const storedUserId = localStorage.getItem('userID');
+    const storedToken = localStorage.getItem('token');
 
     useEffect(() => {
-        fetch('https://localhost:7001/api/Category')
-            .then(response => response.json())
-            .then(data => {
-                if (data.isSuccess && Array.isArray(data.result.$values)) {
-                    setCategories(data.result.$values);
-                    if (data.result.$values.length > 0) {
-                        setSelectedType(data.result.$values[0].id);
-                        fetchMenuItems(data.result.$values[0].id);
+        axios.get('https://localhost:7001/api/Category')
+            .then(response => {
+                if (response.data.isSuccess && Array.isArray(response.data.result)) {
+                    setCategories(response.data.result);
+                    if (response.data.result.length > 0) {
+                        setSelectedType(response.data.result[0].id);
+                        fetchMenuItems(response.data.result[0].id);
                     }
                 } else {
-                    console.error('API response is not in the expected format:', data);
+                    console.error('API response is not in the expected format:', response.data);
                 }
             })
             .catch(error => console.error('Error fetching categories:', error));
     }, []);
 
     const fetchMenuItems = (categoryId) => {
-        fetch(`https://localhost:7001/api/MenuItem?categoryId=${categoryId}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.isSuccess && Array.isArray(data.result.$values)) {
-                    setMenuItems(data.result.$values);
+        axios.get(`https://localhost:7001/api/MenuItem/Category/${categoryId}`)
+            .then(response => {
+                if (response.data.isSuccess && Array.isArray(response.data.result)) {
+                    setMenuItems(response.data.result);
                 } else {
-                    console.error('API response is not in the expected format:', data);
+                    console.error('API response is not in the expected format:', response.data);
                 }
             })
             .catch(error => console.error('Error fetching menu items:', error));
@@ -46,15 +45,17 @@ const Menu = () => {
 
     const handleAddToCart = async (menuItemId, menuItemName) => {
         try {
-            await axios.post(`https://localhost:7001/api/ShoppingCart`, null, {
+            await axios.post('https://localhost:7001/api/ShoppingCart', null, {
                 params: {
-                    userId: storedUserId,
                     menuItemId: menuItemId,
-                    updateQuantityBy: 1
+                    updateQuantity: 1
+                },
+                headers: {
+                    'Authorization': `Bearer ${storedToken}`
                 }
             });
             setNotification(`Đã thêm "${menuItemName}" vào giỏ hàng`);
-            setTimeout(() => setNotification(''), 3000); // Clear notification after 3 seconds
+            setTimeout(() => setNotification(''), 3000);
         } catch (error) {
             console.error('Error adding item to cart:', error);
         }
