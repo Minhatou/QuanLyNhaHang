@@ -1,13 +1,43 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import reservationImage from '../../images/reservation/table-restaurant-food-buffet-interior-design-restaurants-1376921-pxhere.com.jpg';
 
 const Reservation = () => {
     const [name, setName] = useState('');
+    const [phone, setPhone] = useState('');
+    const [datetime, setDatetime] = useState('');
+    const [quantity, setQuantity] = useState('');
+    const [requests, setRequests] = useState('');
+    const storedUserId = localStorage.getItem('userID');
+    const storedToken = localStorage.getItem('token');
 
     useEffect(() => {
         const storedName = localStorage.getItem('name');
         if (storedName) setName(storedName);
     }, []);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const formData = new FormData();
+        formData.append('name', name);
+        formData.append('phoneNumber', phone);
+        formData.append('bookingDate', datetime);
+        formData.append('numberOfGuests', quantity);
+        formData.append('specialRequest', requests);
+
+        try {
+            await axios.post('https://localhost:7001/api/Booking', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${storedToken}`
+                },
+            });
+            alert('Booking successful!');
+        } catch (error) {
+            console.error('Error creating booking:', error);
+            alert('Failed to create booking.');
+        }
+    };
 
     return (
         <section id="reservation" className="w-full h-screen p-4 md:p-12 flex items-center justify-center text-left relative">
@@ -19,7 +49,7 @@ const Reservation = () => {
                     Gọi hotline: (+84) 987 654 321 <br />
                     Hoặc điền form đăng ký, chúng tôi sẽ liên hệ tư vấn cho bạn
                 </p>
-                <form>
+                <form onSubmit={handleSubmit}>
                     <div className="mb-4">
                         <label className="block text-white text-sm font-bold mb-2" htmlFor="name">
                             Họ tên*:
@@ -35,18 +65,6 @@ const Reservation = () => {
                         />
                     </div>
                     <div className="mb-4">
-                        <label className="block text-white text-sm font-bold mb-2" htmlFor="email">
-                            Email*:
-                        </label>
-                        <input
-                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            type="email"
-                            name="email"
-                            id="email"
-                            required
-                        />
-                    </div>
-                    <div className="mb-4">
                         <label className="block text-white text-sm font-bold mb-2" htmlFor="phone">
                             Số điện thoại*:
                         </label>
@@ -55,6 +73,8 @@ const Reservation = () => {
                             type="tel"
                             name="phone"
                             id="phone"
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
                             required
                         />
                     </div>
@@ -67,6 +87,8 @@ const Reservation = () => {
                             type="datetime-local"
                             name="datetime"
                             id="datetime"
+                            value={datetime}
+                            onChange={(e) => setDatetime(e.target.value)}
                             required
                         />
                     </div>
@@ -80,6 +102,8 @@ const Reservation = () => {
                             name="quantity"
                             id="quantity"
                             min="1"
+                            value={quantity}
+                            onChange={(e) => setQuantity(e.target.value)}
                             required
                         />
                     </div>
@@ -91,6 +115,8 @@ const Reservation = () => {
                             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                             name="requests"
                             id="requests"
+                            value={requests}
+                            onChange={(e) => setRequests(e.target.value)}
                         ></textarea>
                     </div>
                     <div className="flex items-center justify-between">
@@ -98,7 +124,7 @@ const Reservation = () => {
                             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                             type="submit"
                         >
-                            Submit
+                            Đặt bàn
                         </button>
                     </div>
                 </form>

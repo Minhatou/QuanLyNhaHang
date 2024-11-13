@@ -14,11 +14,16 @@ const AdminItem = () => {
     });
     const [showForm, setShowForm] = useState(false);
     const [editItem, setEditItem] = useState(null); // State to manage the item being edited
+    const storedToken = localStorage.getItem('token');
 
     const fetchMenuItems = async () => {
         try {
-            const response = await axios.get('https://localhost:7001/api/MenuItem');
-            setMenuItems(response.data.result.$values || []);
+            const response = await axios.get('https://localhost:7001/api/MenuItem', {
+                headers: {
+                    'Authorization': `Bearer ${storedToken}`
+                }
+            });
+            setMenuItems(response.data.result || []);
         } catch (error) {
             console.error('Error fetching menu items:', error);
         }
@@ -43,7 +48,6 @@ const AdminItem = () => {
         }
     };
 
-
     const handleAddItem = async () => {
         const formData = new FormData();
         formData.append('categoryId', newItem.categoryId);
@@ -57,6 +61,7 @@ const AdminItem = () => {
             const response = await axios.post('https://localhost:7001/api/MenuItem', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${storedToken}`
                 },
             });
             console.log('Menu item added:', response.data);
@@ -94,6 +99,7 @@ const AdminItem = () => {
             const response = await axios.put(`https://localhost:7001/api/MenuItem/${editItem.id}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
+                    'Authorization': `Bearer ${storedToken}`
                 },
             });
             console.log('Menu item updated:', response.data);
@@ -107,7 +113,11 @@ const AdminItem = () => {
 
     const handleDelete = async (id) => {
         try {
-            await axios.delete(`https://localhost:7001/api/MenuItem/${id}`);
+            await axios.delete(`https://localhost:7001/api/MenuItem/${id}`, {
+                headers: {
+                    'Authorization': `Bearer ${storedToken}`
+                }
+            });
             console.log('Menu item deleted');
             fetchMenuItems();
         } catch (error) {

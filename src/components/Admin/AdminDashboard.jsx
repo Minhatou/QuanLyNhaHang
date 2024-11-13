@@ -8,6 +8,7 @@ import AdminCustomer from './AdminCustomer/admin-customer.jsx';
 import AdminItem_Categories from "./AdminItem/AdminItem_Categories.jsx";
 import AdminOrder from "./AdminOrder/AdminOrder.jsx";
 import AdminItem from "./AdminItem/AdminItem.jsx";
+import AdminReservationSchedule from "./AdminTable/AdminReservationSchedule.jsx";
 
 const AdminDashboard = () => {
     return (
@@ -19,6 +20,7 @@ const AdminDashboard = () => {
                     <Route path="/order-list" element={<AdminOrder />} />
                     <Route path="item-categories" element={<AdminItem_Categories />} />
                     <Route path="menu-item" element={<AdminItem />} />
+                    <Route path="reservation-schedule" element={<AdminReservationSchedule />} />
                     <Route path="news-list/news/edit/:_id" element={<EditNews />} />
                     <Route path="news-list" element={<AdminPosts />} />
                     <Route path="staff-list" element={<AdminStaff />} />
