@@ -29,7 +29,7 @@ const AuthForms = () => {
             localStorage.setItem('name', response.data.result.user.name);
             localStorage.setItem('userName', response.data.result.user.userName);
             localStorage.setItem('userID', response.data.result.user.id);
-            // Redirect to homepage after successful login
+            localStorage.setItem('role', response.data.result.user.role);
             navigate('/');
         } catch (error) {
             setLoginError('Tên đăng nhập hoặc mật khẩu không đúng');

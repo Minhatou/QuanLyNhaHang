@@ -19,6 +19,7 @@ function Header() {
         localStorage.removeItem('name');
         localStorage.removeItem('username');
         localStorage.removeItem('userID');
+        localStorage.removeItem('role');
         navigate('/auth');
     };
 
@@ -61,6 +62,7 @@ function Header() {
                               onClick={toggleDropdown}>Hello, {userName}</span>
                         {dropdownOpen && (
                             <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-50">
+                                <Link to="/order-history" className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-200">Lịch sử đặt hàng</Link>
                                 <button onClick={handleLogout}
                                         className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-200">Đăng xuất
                                 </button>

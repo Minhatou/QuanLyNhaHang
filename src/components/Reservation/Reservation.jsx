@@ -8,7 +8,6 @@ const Reservation = () => {
     const [datetime, setDatetime] = useState('');
     const [quantity, setQuantity] = useState('');
     const [requests, setRequests] = useState('');
-    const storedUserId = localStorage.getItem('userID');
     const storedToken = localStorage.getItem('token');
 
     useEffect(() => {

@@ -15,6 +15,7 @@ import AdminLogin from './components/Admin/AdminLogin/AdminLogin.jsx';
 import NewsDetail from "./components/News/NewsDetail.jsx";
 import ShoppingCart from './components/Cart/Cart.jsx';
 import './App.css';
+import OrderHistory from "./components/OrderHistory/OrderHistory.jsx";
 
 function App() {
     const [user, setUser] = useState(null);
@@ -47,6 +48,13 @@ function App() {
                                 <SecondaryHeader user={user} />
                                 <ShoppingCart />
                                 <Footer/>
+                            </>
+                        }/>
+                        <Route path="/order-history" element={
+                            <>
+                                <SecondaryHeader user={user} />
+                                <OrderHistory />
+                                <Footer />
                             </>
                         }/>
                         {/* Route for the admin dashboard */}

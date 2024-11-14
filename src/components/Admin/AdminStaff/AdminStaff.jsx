@@ -1,159 +1,103 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-const AdminStaff = () => {
-    const [staffs, setStaffs] = useState([]);
-    const [showForm, setShowForm] = useState(false);
-    const [newStaff, setNewStaff] = useState({ name: '', email: '', role: '', password: '' });
-    const [editStaff, setEditStaff] = useState(null);
+const StaffList = () => {
+    const [users, setUsers] = useState([]);
+    const [error, setError] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
 
     useEffect(() => {
-        const fetchStaffs = async () => {
+        const fetchUsers = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/admin/staffs-list');
-                setStaffs(response.data);
+                const response = await axios.get('https://localhost:7001/api/User');
+                const staffAndAdmins = response.data.result.filter(user => user.role === 'staff' || user.role === 'admin');
+                setUsers(staffAndAdmins);
             } catch (error) {
-                console.error('Error fetching staff list:', error);
+                setError('Error fetching users');
+                console.error('Error fetching users:', error);
             }
         };
 
-        fetchStaffs();
+        fetchUsers();
     }, []);
 
-    const handleEdit = (staff) => {
-        setEditStaff(staff);
-        setShowForm(true);
+    const handleEdit = (user) => {
+        // Implement edit functionality here
+        console.log('Edit user:', user);
     };
 
-    const handleDelete = async (_id) => {
-        const confirmDelete = window.confirm('Bạn có muốn xoá nhân viên này không?');
+    const handleRemove = async (userId) => {
+        const confirmDelete = window.confirm('Are you sure you want to delete this user?');
         if (!confirmDelete) return;
 
         try {
-            await axios.delete(`http://localhost:5000/api/admin/staffs-list/${_id}`);
-            setStaffs(staffs.filter(staff => staff._id !== _id));
+            await axios.delete(`https://localhost:7001/api/User/${userId}`);
+            setUsers(users.filter(user => user.id !== userId));
         } catch (error) {
-            console.error('Error deleting staff:', error);
+            console.error('Error deleting user:', error);
         }
     };
 
-    const handleAddStaff = async (e) => {
-        e.preventDefault();
-        try {
-            await axios.post('http://localhost:5000/api/admin/add-staff', newStaff);
-            setNewStaff({ name: '', email: '', role: '', password: '' });
-            setShowForm(false);
-            window.location.reload();
-        } catch (error) {
-            console.error('Error adding new staff:', error);
-        }
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber);
     };
 
-    const handleUpdateStaff = async (e) => {
-        e.preventDefault();
-        try {
-            await axios.put(`http://localhost:5000/api/admin/staffs-list/${editStaff._id}`, editStaff);
-            setEditStaff(null);
-            setShowForm(false);
-            window.location.reload();
-        } catch (error) {
-            console.error('Error updating staff:', error);
-        }
-    };
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = users.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(users.length / itemsPerPage);
 
     return (
-        <div>
-            <h1 className="text-2xl font-bold mb-4">Manage Staff</h1>
-            <button
-                className="mb-4 px-4 py-2 bg-blue-500 text-white rounded"
-                onClick={() => setShowForm(!showForm)}
-            >
-                {showForm ? 'Cancel' : 'Add New Staff'}
-            </button>
-            {showForm && (
-                <form onSubmit={editStaff ? handleUpdateStaff : handleAddStaff} className="mb-4">
-                    <div>
-                        <label className="block mb-2">Name</label>
-                        <input
-                            type="text"
-                            value={editStaff ? editStaff.name : newStaff.name}
-                            onChange={(e) => editStaff ? setEditStaff({ ...editStaff, name: e.target.value }) : setNewStaff({ ...newStaff, name: e.target.value })}
-                            className="border px-2 py-1"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label className="block mb-2">Email</label>
-                        <input
-                            type="email"
-                            value={editStaff ? editStaff.email : newStaff.email}
-                            onChange={(e) => editStaff ? setEditStaff({ ...editStaff, email: e.target.value }) : setNewStaff({ ...newStaff, email: e.target.value })}
-                            className="border px-2 py-1"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label className="block mb-2">Role</label>
-                        <input
-                            type="text"
-                            value={editStaff ? editStaff.role : newStaff.role}
-                            onChange={(e) => editStaff ? setEditStaff({ ...editStaff, role: e.target.value }) : setNewStaff({ ...newStaff, role: e.target.value })}
-                            className="border px-2 py-1"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label className="block mb-2">Password</label>
-                        <input
-                            type="password"
-                            value={editStaff ? editStaff.password : newStaff.password}
-                            onChange={(e) => editStaff ? setEditStaff({ ...editStaff, password: e.target.value }) : setNewStaff({ ...newStaff, password: e.target.value })}
-                            className="border px-2 py-1"
-                            required
-                        />
-                    </div>
-                    <button type="submit" className="mt-2 px-4 py-2 bg-green-500 text-white rounded">
-                        {editStaff ? 'Update Staff' : 'Add Staff'}
-                    </button>
-                </form>
-            )}
-            <table className="min-w-full bg-white">
-                <thead>
+        <div className="p-8 bg-gray-100 min-h-screen">
+            <h1 className="text-3xl font-bold mb-6 text-center">Staff and Admin List</h1>
+            {error && <div className="text-red-500 mb-4">{error}</div>}
+            <table className="min-w-full bg-white border border-gray-300">
+                <thead className="bg-gray-200">
                 <tr>
-                    <th className="py-2 px-4 border-b">ID</th>
-                    <th className="py-2 px-4 border-b">Name</th>
-                    <th className="py-2 px-4 border-b">Email</th>
-                    <th className="py-2 px-4 border-b">Role</th>
-                    <th className="py-2 px-4 border-b">Actions</th>
+                    <th className="py-2 px-4 border-b border-gray-300">Name</th>
+                    <th className="py-2 px-4 border-b border-gray-300">Username</th>
+                    <th className="py-2 px-4 border-b border-gray-300">Role</th>
+                    <th className="py-2 px-4 border-b border-gray-300">Actions</th>
                 </tr>
                 </thead>
                 <tbody>
-                {staffs.map(staff => (
-                    <tr key={staff._id}>
-                        <td className="py-2 px-4 border-b">{staff._id}</td>
-                        <td className="py-2 px-4 border-b">{staff.name}</td>
-                        <td className="py-2 px-4 border-b">{staff.email}</td>
-                        <td className="py-2 px-4 border-b">{staff.role}</td>
-                        <td className="py-2 px-4 border-b">
+                {currentItems.map(user => (
+                    <tr key={user.id} className="hover:bg-gray-100">
+                        <td className="py-2 px-4 border-b border-gray-300">{user.name}</td>
+                        <td className="py-2 px-4 border-b border-gray-300">{user.userName}</td>
+                        <td className="py-2 px-4 border-b border-gray-300">{user.role}</td>
+                        <td className="py-2 px-4 border-b border-gray-300">
                             <button
-                                className="mr-2 px-4 py-2 bg-yellow-500 text-white rounded"
-                                onClick={() => handleEdit(staff)}
+                                className="mr-2 px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600"
+                                onClick={() => handleEdit(user)}
                             >
                                 Edit
                             </button>
                             <button
-                                className="px-4 py-2 bg-red-500 text-white rounded"
-                                onClick={() => handleDelete(staff._id)}
+                                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                                onClick={() => handleRemove(user.id)}
                             >
-                                Delete
+                                Remove
                             </button>
                         </td>
                     </tr>
                 ))}
                 </tbody>
             </table>
+            <div className="flex justify-center mt-4">
+                {Array.from({ length: totalPages }, (_, index) => (
+                    <button
+                        key={index + 1}
+                        className={`mx-1 px-3 py-1 border rounded ${currentPage === index + 1 ? 'bg-blue-500 text-white' : 'bg-white text-blue-500'}`}
+                        onClick={() => handlePageChange(index + 1)}
+                    >
+                        {index + 1}
+                    </button>
+                ))}
+            </div>
         </div>
     );
 };
 
-export default AdminStaff;
+export default StaffList;

@@ -8,9 +8,13 @@ const Cart = () => {
         name: '',
         address: '',
         phone: '',
+        city: '',
+        state: ''
     });
     const storedUserId = localStorage.getItem('userID');
     const storedToken = localStorage.getItem('token');
+    const storedUserRole = localStorage.getItem('role');
+    const storedName = localStorage.getItem('name');
 
     useEffect(() => {
         const fetchCartItems = async () => {
@@ -98,33 +102,30 @@ const Cart = () => {
 
     const handleConfirmTransaction = async () => {
         try {
-            // Fetch the cart data again
-            const response = await axios.get(`https://localhost:7001/api/ShoppingCart?userId=${storedUserId}`);
-            const cartData = response.data.result;
-
             // Prepare the order payload
             const orderPayload = {
-                applicationUserId: cartData.applicationUser.id,
-                orderTotal: cartData.cartTotal,
-                itemTotal: 0,
-                paymentIntentId: "0",
-                orderStatus: "Đã thanh toán",
-                email: cartData.applicationUser.email,
-                name: cartData.applicationUser.name,
-                phoneNumber: cartData.applicationUser.phoneNumber,
-                streetAddress: cartData.applicationUser.streetAddress,
-                city: cartData.applicationUser.city,
-                state: cartData.applicationUser.state,
-                orderDetail: cartData.cartItems.$values.map(item => ({
-                    menuItemId: item.menuItem.id,
-                    quantity: item.quantity,
-                    price: item.menuItem.price
-                }))
+                applicationUserId: storedUserId,
+                deliveryInfo: {
+                    name: storedUserRole === 'table' ? storedName : userInfo.name,
+                    phoneNumber: userInfo.phone,
+                    streetAddress: userInfo.address,
+                    city: userInfo.city,
+                    state: userInfo.state
+                },
             };
 
             // Post the order details to the order endpoint
-            await axios.post(`https://localhost:7001/api/Order`, orderPayload);
-            console.log('Transaction confirmed');
+            await axios.post(`https://localhost:7001/api/Order`, orderPayload, {
+                headers: {
+                    'Authorization': `Bearer ${storedToken}`
+                }
+            });
+
+            // Notify the user
+            alert('Transaction confirmed');
+
+            // Refresh the page
+            window.location.reload();
         } catch (error) {
             console.error('Error confirming transaction:', error);
         }
@@ -136,9 +137,12 @@ const Cart = () => {
             <ul className="space-y-4">
                 {cartItems.map(item => (
                     <li key={item.id} className="flex items-center justify-between p-4 bg-white shadow rounded-lg">
-                        <div>
-                            <h2 className="text-xl font-semibold">{item.menuItem.name}</h2>
-                            <p className="text-gray-600">Số lượng: {item.quantity}</p>
+                        <div className="flex items-center">
+                            <img src={item.menuItem.imageUrl} alt={item.menuItem.name} className="w-16 h-16 object-cover rounded mr-4" />
+                            <div>
+                                <h2 className="text-xl font-semibold">{item.menuItem.name}</h2>
+                                <p className="text-gray-600">Số lượng: {item.quantity}</p>
+                            </div>
                         </div>
                         <div className="text-right">
                             <p className="text-lg font-bold">{item.menuItem.price}đ</p>
@@ -161,38 +165,80 @@ const Cart = () => {
             <div className="mt-6 text-right">
                 <h2 className="text-2xl font-bold">Tổng tiền: {cartTotal}đ</h2>
             </div>
-            <form className="mt-6 space-y-4">
-                <div>
-                    <label className="block text-gray-700">Tên</label>
-                    <input
-                        type="text"
-                        name="name"
-                        value={userInfo.name}
-                        onChange={handleInputChange}
-                        className="w-full p-2 border border-gray-300 rounded"
-                    />
-                </div>
-                <div>
-                    <label className="block text-gray-700">Địa chỉ</label>
-                    <input
-                        type="text"
-                        name="address"
-                        value={userInfo.address}
-                        onChange={handleInputChange}
-                        className="w-full p-2 border border-gray-300 rounded"
-                    />
-                </div>
-                <div>
-                    <label className="block text-gray-700">Số điên thoại</label>
-                    <input
-                        type="text"
-                        name="phone"
-                        value={userInfo.phone}
-                        onChange={handleInputChange}
-                        className="w-full p-2 border border-gray-300 rounded"
-                    />
-                </div>
-            </form>
+            {storedUserRole === 'customer' && (
+                <form className="mt-6 space-y-4">
+                    <div>
+                        <label className="block text-gray-700">Tên</label>
+                        <input
+                            type="text"
+                            name="name"
+                            value={userInfo.name}
+                            onChange={handleInputChange}
+                            className="w-full p-2 border border-gray-300 rounded"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-gray-700">Địa chỉ</label>
+                        <input
+                            type="text"
+                            name="address"
+                            value={userInfo.address}
+                            onChange={handleInputChange}
+                            className="w-full p-2 border border-gray-300 rounded"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-gray-700">Số điện thoại</label>
+                        <input
+                            type="text"
+                            name="phone"
+                            value={userInfo.phone}
+                            onChange={handleInputChange}
+                            className="w-full p-2 border border-gray-300 rounded"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-gray-700">Thành phố</label>
+                        <input
+                            type="text"
+                            name="city"
+                            value={userInfo.city}
+                            onChange={handleInputChange}
+                            className="w-full p-2 border border-gray-300 rounded"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-gray-700">Bang</label>
+                        <input
+                            type="text"
+                            name="state"
+                            value={userInfo.state}
+                            onChange={handleInputChange}
+                            className="w-full p-2 border border-gray-300 rounded"
+                            required
+                        />
+                    </div>
+                </form>
+            )}
+
+            {storedUserRole === 'table' && (
+                <form className="mt-6 space-y-4">
+                    <div>
+                        <label className="block text-gray-700">Tên</label>
+                        <input
+                            type="text"
+                            name="name"
+                            value={storedName}
+                            readOnly
+                            className="w-full p-2 border border-gray-300 rounded bg-gray-200"
+                        />
+                    </div>
+                </form>
+            )}
             <div className="mt-6 text-right">
                 <button
                     onClick={handleConfirmTransaction}

@@ -4,11 +4,13 @@ import Sidebar from './AdminSidebar/AdminSidebar.jsx';
 import AdminPosts from './AdminPost/AdminNews.jsx';
 import EditNews from './AdminPost/EditNews.jsx';
 import AdminStaff from './AdminStaff/AdminStaff.jsx';
-import AdminCustomer from './AdminCustomer/admin-customer.jsx';
 import AdminItem_Categories from "./AdminItem/AdminItem_Categories.jsx";
 import AdminOrder from "./AdminOrder/AdminOrder.jsx";
 import AdminItem from "./AdminItem/AdminItem.jsx";
 import AdminReservationSchedule from "./AdminTable/AdminReservationSchedule.jsx";
+import AdminCustomerList from "./AdminCustomer/AdminCustomerList.jsx";
+import AdminTableList from "./AdminTable/AdminTableList.jsx";
+import AdminStatistic from "./AdminStatistic/AdminStatistic.jsx";
 
 const AdminDashboard = () => {
     return (
@@ -24,7 +26,9 @@ const AdminDashboard = () => {
                     <Route path="news-list/news/edit/:_id" element={<EditNews />} />
                     <Route path="news-list" element={<AdminPosts />} />
                     <Route path="staff-list" element={<AdminStaff />} />
-                    <Route path="customer-list" element={<AdminCustomer />} />
+                    <Route path="customer-list" element={<AdminCustomerList />} />
+                    <Route path="table-layout" element={<AdminTableList />} />
+                    <Route path="statistics" element={<AdminStatistic />} />
                 </Routes>
             </div>
         </div>

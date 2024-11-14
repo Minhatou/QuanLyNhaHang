@@ -28,6 +28,7 @@ const Sidebar = () => {
         localStorage.removeItem('adminName');
         localStorage.removeItem('adminUserName');
         localStorage.removeItem('adminUserID');
+        localStorage.removeItem('adminRole');
         navigate('/admin');
     };
 

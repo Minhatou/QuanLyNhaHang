@@ -20,10 +20,12 @@ const AdminLogin = () => {
             const response = await axios.post('https://localhost:7001/api/auth/login', { ...loginData, role: '15a3795a-47d8-49cd-9f74-d1036b3b53f3' });
 
             // Store JWT token and user's name in localStorage
-            localStorage.setItem('adminToken', response.data.token);
+            localStorage.setItem('adminToken', response.data.result.token);
+            console.log(response.data.token)
             localStorage.setItem('adminName', response.data.result.user.name);
             localStorage.setItem('adminUserName', response.data.result.user.userName);
             localStorage.setItem('adminUserID', response.data.result.user.id);
+            localStorage.setItem('adminRole', response.data.result.user.role);
             // Redirect to homepage after successful login
             navigate('/admin/dashboard');
         } catch (error) {

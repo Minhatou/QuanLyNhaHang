@@ -13,17 +13,21 @@ const AdminItem = () => {
         image: null
     });
     const [showForm, setShowForm] = useState(false);
-    const [editItem, setEditItem] = useState(null); // State to manage the item being edited
+    const [editItem, setEditItem] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const pageSize = 10;
     const storedToken = localStorage.getItem('token');
 
     const fetchMenuItems = async () => {
         try {
-            const response = await axios.get('https://localhost:7001/api/MenuItem', {
+            const response = await axios.get(`https://localhost:7001/api/MenuItem?page=${currentPage}&pageSize=${pageSize}`, {
                 headers: {
                     'Authorization': `Bearer ${storedToken}`
                 }
             });
             setMenuItems(response.data.result || []);
+            setTotalPages(response.data.totalPages || 1);
         } catch (error) {
             console.error('Error fetching menu items:', error);
         }
@@ -40,7 +44,6 @@ const AdminItem = () => {
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
-        console.log('Selected file:', file.name); // Log the file name
         if (editItem) {
             setEditItem({ ...editItem, image: file });
         } else {
@@ -58,13 +61,12 @@ const AdminItem = () => {
         formData.append('image', newItem.image);
 
         try {
-            const response = await axios.post('https://localhost:7001/api/MenuItem', formData, {
+            await axios.post('https://localhost:7001/api/MenuItem', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${storedToken}`
                 },
             });
-            console.log('Menu item added:', response.data);
             setNewItem({
                 categoryId: '',
                 description: '',
@@ -96,13 +98,12 @@ const AdminItem = () => {
         formData.append('image', editItem.image);
 
         try {
-            const response = await axios.put(`https://localhost:7001/api/MenuItem/${editItem.id}`, formData, {
+            await axios.put(`https://localhost:7001/api/MenuItem/${editItem.id}`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     'Authorization': `Bearer ${storedToken}`
                 },
             });
-            console.log('Menu item updated:', response.data);
             setEditItem(null);
             setShowForm(false);
             fetchMenuItems();
@@ -118,16 +119,21 @@ const AdminItem = () => {
                     'Authorization': `Bearer ${storedToken}`
                 }
             });
-            console.log('Menu item deleted');
             fetchMenuItems();
         } catch (error) {
             console.error('Error deleting menu item:', error);
         }
     };
 
+    const handlePageChange = (newPage) => {
+        if (newPage > 0 && newPage <= totalPages) {
+            setCurrentPage(newPage);
+        }
+    };
+
     useEffect(() => {
         fetchMenuItems();
-    }, []);
+    }, [currentPage]);
 
     return (
         <div className="p-8 bg-gray-100 min-h-screen">
@@ -267,6 +273,7 @@ const AdminItem = () => {
                 <tr>
                     <th className="py-2 px-4 border-b">ID</th>
                     <th className="py-2 px-4 border-b">Name</th>
+                    <th className="py-2 px-4 border-b">Image</th>
                     <th className="py-2 px-4 border-b">Actions</th>
                 </tr>
                 </thead>
@@ -275,6 +282,9 @@ const AdminItem = () => {
                     <tr key={item.id}>
                         <td className="py-2 px-4 border-b">{item.id}</td>
                         <td className="py-2 px-4 border-b">{item.name}</td>
+                        <td className="py-2 px-4 border-b">
+                            {item.imageUrl && <img src={item.imageUrl} alt={item.name} className="w-16 h-16 object-cover" />}
+                        </td>
                         <td className="py-2 px-4 border-b">
                             <button
                                 className="mr-2 px-4 py-2 bg-yellow-500 text-white rounded"
@@ -293,6 +303,23 @@ const AdminItem = () => {
                 ))}
                 </tbody>
             </table>
+            <div className="flex justify-between mt-4">
+                <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="px-4 py-2 bg-gray-300 text-gray-700 rounded"
+                >
+                    Previous
+                </button>
+                <span>Page {currentPage} of {totalPages}</span>
+                <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="px-4 py-2 bg-gray-300 text-gray-700 rounded"
+                >
+                    Next
+                </button>
+            </div>
         </div>
     );
 };
