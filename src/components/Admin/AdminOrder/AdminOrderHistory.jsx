@@ -1,27 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-const AdminOrder = () => {
+const AdminOrderHistory = () => {
     const [orders, setOrders] = useState([]);
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [error, setError] = useState(null);
     const storedToken = localStorage.getItem('adminToken');
 
-    useEffect(() => {
-        const fetchOrders = async () => {
-            try {
-                const response = await axios.get('https://localhost:7001/api/Order', {
-                    headers: {
-                        'Authorization': `Bearer ${storedToken}`
-                    }
-                });
-                setOrders(response.data.result || []);
-            } catch (error) {
-                console.error('Error fetching orders:', error);
-            }
-        };
+    const fetchOrders = async () => {
+        try {
+            const response = await axios.get('https://localhost:7001/api/Order', {
+                headers: {
+                    'Authorization': `Bearer ${storedToken}`
+                }
+            });
+            const filteredOrders = response.data.result.filter(order =>
+                ['Completed', 'Cancelled'].includes(order.orderStatus)
+            );
+            setOrders(filteredOrders);
+        } catch (error) {
+            console.error('Error fetching orders:', error);
+        }
+    };
 
+    useEffect(() => {
         fetchOrders();
     }, [storedToken]);
 
@@ -39,15 +42,16 @@ const AdminOrder = () => {
         }
     };
 
-    const closeModal = () => {
+    const closeModal = async () => {
         setIsModalOpen(false);
         setSelectedOrder(null);
-        setError(null); // Clear any errors when closing the modal
+        setError(null);
+        await fetchOrders();
     };
 
     return (
         <div className="p-8 bg-gray-100 min-h-screen">
-            <h1 className="text-3xl font-bold mb-6 text-center">Order List</h1>
+            <h1 className="text-3xl font-bold mb-6 text-center">Order History</h1>
             <table className="min-w-full bg-white">
                 <thead>
                 <tr>
@@ -91,6 +95,7 @@ const AdminOrder = () => {
                             <tr>
                                 <th className="py-2 px-4 border-b">Item ID</th>
                                 <th className="py-2 px-4 border-b">Item Name</th>
+                                <th className="py-2 px-4 border-b">Image</th>
                                 <th className="py-2 px-4 border-b">Quantity</th>
                                 <th className="py-2 px-4 border-b">Price</th>
                             </tr>
@@ -100,6 +105,9 @@ const AdminOrder = () => {
                                 <tr key={item.menuItemId}>
                                     <td className="py-2 px-4 border-b">{item.menuItemId}</td>
                                     <td className="py-2 px-4 border-b">{item.menuItem.name}</td>
+                                    <td className="py-2 px-4 border-b">
+                                        {item.menuItem.image && <img src={item.menuItem.image} alt={item.menuItem.name} className="w-16 h-16 object-cover" />}
+                                    </td>
                                     <td className="py-2 px-4 border-b">{item.quantity}</td>
                                     <td className="py-2 px-4 border-b">{item.price}</td>
                                 </tr>
@@ -125,4 +133,4 @@ const AdminOrder = () => {
     );
 };
 
-export default AdminOrder;
+export default AdminOrderHistory;

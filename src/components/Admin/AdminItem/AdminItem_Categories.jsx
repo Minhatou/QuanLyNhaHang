@@ -1,16 +1,20 @@
+// src/components/Admin/AdminItem/AdminItem_Categories.jsx
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import Modal from '../Modal';
+import ConfirmationModal from '../ConfirmationModal';
 
 const AdminItemCategories = () => {
     const [categories, setCategories] = useState([]);
     const [newCategory, setNewCategory] = useState({
-        id: '',
         name: '',
         description: ''
     });
     const [showForm, setShowForm] = useState(false);
-    const [editCategory, setEditCategory] = useState(null); // State to manage the category being edited
-    const storedToken = localStorage.getItem('token');
+    const [editCategory, setEditCategory] = useState(null);
+    const [showConfirm, setShowConfirm] = useState(false);
+    const [categoryToDelete, setCategoryToDelete] = useState(null);
+    const storedToken = localStorage.getItem('adminToken');
 
     const fetchCategories = async () => {
         try {
@@ -36,14 +40,18 @@ const AdminItemCategories = () => {
 
     const handleAddCategory = async () => {
         try {
-            const response = await axios.post('https://localhost:7001/api/Category', newCategory, {
+            const formData = new FormData();
+            formData.append('name', newCategory.name);
+            formData.append('description', newCategory.description);
+
+            const response = await axios.post('https://localhost:7001/api/Category', formData, {
                 headers: {
-                    'Authorization': `Bearer ${storedToken}`
+                    'Authorization': `Bearer ${storedToken}`,
+                    'Content-Type': 'multipart/form-data'
                 }
             });
             console.log('Category added:', response.data);
             setNewCategory({
-                id: '',
                 name: '',
                 description: ''
             });
@@ -61,9 +69,15 @@ const AdminItemCategories = () => {
 
     const handleUpdateCategory = async () => {
         try {
-            const response = await axios.put(`https://localhost:7001/api/Category/${editCategory.id}`, editCategory, {
+            const formData = new FormData();
+            formData.append('id', editCategory.id);
+            formData.append('name', editCategory.name);
+            formData.append('description', editCategory.description);
+
+            const response = await axios.put(`https://localhost:7001/api/Category/${editCategory.id}`, formData, {
                 headers: {
-                    'Authorization': `Bearer ${storedToken}`
+                    'Authorization': `Bearer ${storedToken}`,
+                    'Content-Type': 'multipart/form-data'
                 }
             });
             console.log('Category updated:', response.data);
@@ -89,6 +103,17 @@ const AdminItemCategories = () => {
         }
     };
 
+    const confirmDelete = (id) => {
+        setCategoryToDelete(id);
+        setShowConfirm(true);
+    };
+
+    const handleConfirmDelete = () => {
+        handleDelete(categoryToDelete);
+        setShowConfirm(false);
+        setCategoryToDelete(null);
+    };
+
     useEffect(() => {
         fetchCategories();
     }, []);
@@ -102,7 +127,7 @@ const AdminItemCategories = () => {
             >
                 Add Category
             </button>
-            {showForm && (
+            <Modal isOpen={showForm} onClose={() => { setShowForm(false); setEditCategory(null); }}>
                 <div className="mb-4">
                     {!editCategory && (
                         <>
@@ -167,7 +192,13 @@ const AdminItemCategories = () => {
                         Cancel
                     </button>
                 </div>
-            )}
+            </Modal>
+            <ConfirmationModal
+                isOpen={showConfirm}
+                onClose={() => setShowConfirm(false)}
+                onConfirm={handleConfirmDelete}
+                message="Are you sure you want to delete this category?"
+            />
             <table className="min-w-full bg-white">
                 <thead>
                 <tr>
@@ -190,7 +221,7 @@ const AdminItemCategories = () => {
                             </button>
                             <button
                                 className="px-4 py-2 bg-red-500 text-white rounded"
-                                onClick={() => handleDelete(category.id)}
+                                onClick={() => confirmDelete(category.id)}
                             >
                                 Delete
                             </button>

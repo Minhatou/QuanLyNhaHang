@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react';
-import {Link, useNavigate} from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Sidebar = () => {
     const [openMenus, setOpenMenus] = useState({});
@@ -13,6 +13,7 @@ const Sidebar = () => {
             return { ...newOpenMenus, [menu]: !prev[menu] };
         });
     };
+
     const [staffName, setStaffName] = useState('');
 
     useEffect(() => {
@@ -21,6 +22,7 @@ const Sidebar = () => {
             setStaffName(name);
         }
     }, []);
+
     const [showLogout, setShowLogout] = useState(false);
     const navigate = useNavigate();
     const handleLogout = () => {
@@ -33,20 +35,10 @@ const Sidebar = () => {
     };
 
     return (
-        <div className="sidebar bg-gray-800 text-white w-64 min-h-screen p-4">
+        <div className="sidebar bg-gray-800 text-white w-64 min-h-screen p-4 fixed">
             <Link to="/admin/dashboard" className="text-2xl font-bold mb-6 block text-white">Admin Menu</Link>
             <ul className="space-y-4">
                 <li><Link to="./statistics" className="hover:text-gray-400 text-white">Thống kê</Link></li>
-                <li>
-                    <div onClick={() => toggleMenu('hoadon')} className="cursor-pointer text-white"><Link
-                        to="./current-orders" className="text-white">Hoá đơn</Link></div>
-                    {openMenus.hoadon && (
-                        <ul className="pl-4">
-                            <li><Link to="./current-orders" className="text-white">Đơn hiện thời</Link></li>
-                            <li><Link to="./order-history" className="text-white">Lịch sử đơn hàng</Link></li>
-                        </ul>
-                    )}
-                </li>
                 <li>
                     <div onClick={() => toggleMenu('mathang')} className="cursor-pointer text-white"><Link
                         to="./item-categories" className="text-white">Mặt hàng</Link></div>
@@ -63,8 +55,8 @@ const Sidebar = () => {
                     {openMenus.datban && (
                         <ul className="pl-4">
                             <li><Link to="./table-layout" className="text-white">Sơ đồ bàn</Link></li>
-                            <li><Link to="./reservation-schedule" className="text-white">Lịch đặt bàn</Link></li>
-                            <li><Link to="./reservation-history" className="text-white">Lịch sử đặt bàn</Link></li>
+                            <li><Link to="./booking-schedule" className="text-white">Lịch đặt bàn</Link></li>
+                            <li><Link to="./booking-history" className="text-white">Lịch sử đặt bàn</Link></li>
                         </ul>
                     )}
                 </li>
@@ -74,6 +66,7 @@ const Sidebar = () => {
                     {openMenus.dathang && (
                         <ul className="pl-4">
                             <li><Link to="./order-list" className="text-white">Danh sách đơn đặt</Link></li>
+                            <li><Link to="./order-history" className="text-white">Lịch sử đặt hàng</Link></li>
                         </ul>
                     )}
                 </li>
@@ -83,7 +76,7 @@ const Sidebar = () => {
                     {openMenus.nhanvien && (
                         <ul className="pt-2 pl-4">
                             <li><Link to="./staff-list" className="text-white">Danh sách nhân viên</Link></li>
-                            <li><Link to="./staff-roles" className="text-white">Phân Quyền</Link></li>
+                            <li><Link to="./user-roles" className="text-white">Phân Quyền</Link></li>
                         </ul>
                     )}
                 </li>
@@ -109,12 +102,10 @@ const Sidebar = () => {
             <div className="p-4">
                 <p className="text-sm cursor-pointer" onClick={() => setShowLogout(!showLogout)}>Hello, {staffName}</p>
                 {showLogout && (
-                    <button onClick={handleLogout} className="mt-2 bg-red-500 text-white py-1 px-2 rounded">Log
-                        Out</button>
+                    <button onClick={handleLogout} className="mt-2 bg-red-500 text-white py-1 px-2 rounded">Log Out</button>
                 )}
             </div>
         </div>
-
     );
 };
 

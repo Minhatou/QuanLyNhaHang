@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import Modal from '../Modal';
+import ConfirmationModal from '../ConfirmationModal.jsx';
 
 const AdminItem = () => {
     const [menuItems, setMenuItems] = useState([]);
@@ -16,8 +18,10 @@ const AdminItem = () => {
     const [editItem, setEditItem] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
+    const [showConfirm, setShowConfirm] = useState(false);
+    const [itemToDelete, setItemToDelete] = useState(null);
     const pageSize = 10;
-    const storedToken = localStorage.getItem('token');
+    const storedToken = localStorage.getItem('adminToken');
 
     const fetchMenuItems = async () => {
         try {
@@ -125,6 +129,17 @@ const AdminItem = () => {
         }
     };
 
+    const confirmDelete = (id) => {
+        setItemToDelete(id);
+        setShowConfirm(true);
+    };
+
+    const handleConfirmDelete = () => {
+        handleDelete(itemToDelete);
+        setShowConfirm(false);
+        setItemToDelete(null);
+    };
+
     const handlePageChange = (newPage) => {
         if (newPage > 0 && newPage <= totalPages) {
             setCurrentPage(newPage);
@@ -144,7 +159,7 @@ const AdminItem = () => {
             >
                 Add Item
             </button>
-            {showForm && (
+            <Modal isOpen={showForm} onClose={() => { setShowForm(false); setEditItem(null); }}>
                 <div className="mb-4">
                     {!editItem && (
                         <>
@@ -153,7 +168,7 @@ const AdminItem = () => {
                                 className="px-4 py-2 border rounded mt-2"
                                 placeholder="Category ID"
                                 name="categoryId"
-                                value={newItem.categoryId}
+                                value={newItem.categoryId || ''}
                                 onChange={handleInputChange}
                             />
                             <input
@@ -161,14 +176,14 @@ const AdminItem = () => {
                                 className="px-4 py-2 border rounded mt-2"
                                 placeholder="Item Name"
                                 name="name"
-                                value={newItem.name}
+                                value={newItem.name || ''}
                                 onChange={handleInputChange}
                             />
                             <textarea
                                 className="px-4 py-2 border rounded mt-2"
                                 placeholder="Description"
                                 name="description"
-                                value={newItem.description}
+                                value={newItem.description || ''}
                                 onChange={handleInputChange}
                             />
                             <input
@@ -181,7 +196,7 @@ const AdminItem = () => {
                                 className="px-4 py-2 border rounded mt-2"
                                 placeholder="Price"
                                 name="price"
-                                value={newItem.price}
+                                value={newItem.price || ''}
                                 onChange={handleInputChange}
                             />
                             <input
@@ -189,7 +204,7 @@ const AdminItem = () => {
                                 className="px-4 py-2 border rounded mt-2"
                                 placeholder="Special Tag"
                                 name="specialTag"
-                                value={newItem.specialTag}
+                                value={newItem.specialTag || ''}
                                 onChange={handleInputChange}
                             />
                         </>
@@ -201,7 +216,7 @@ const AdminItem = () => {
                                 className="px-4 py-2 border rounded"
                                 placeholder="ID"
                                 name="id"
-                                value={editItem.id}
+                                value={editItem.id || ''}
                                 onChange={handleInputChange}
                                 readOnly
                             />
@@ -210,7 +225,7 @@ const AdminItem = () => {
                                 className="px-4 py-2 border rounded mt-2"
                                 placeholder="Category ID"
                                 name="categoryId"
-                                value={editItem.categoryId}
+                                value={editItem.categoryId || ''}
                                 onChange={handleInputChange}
                             />
                             <input
@@ -218,14 +233,14 @@ const AdminItem = () => {
                                 className="px-4 py-2 border rounded mt-2"
                                 placeholder="Item Name"
                                 name="name"
-                                value={editItem.name}
+                                value={editItem.name || ''}
                                 onChange={handleInputChange}
                             />
                             <textarea
                                 className="px-4 py-2 border rounded mt-2"
                                 placeholder="Description"
                                 name="description"
-                                value={editItem.description}
+                                value={editItem.description || ''}
                                 onChange={handleInputChange}
                             />
                             <input
@@ -238,7 +253,7 @@ const AdminItem = () => {
                                 className="px-4 py-2 border rounded mt-2"
                                 placeholder="Price"
                                 name="price"
-                                value={editItem.price}
+                                value={editItem.price || ''}
                                 onChange={handleInputChange}
                             />
                             <input
@@ -246,7 +261,7 @@ const AdminItem = () => {
                                 className="px-4 py-2 border rounded mt-2"
                                 placeholder="Special Tag"
                                 name="specialTag"
-                                value={editItem.specialTag}
+                                value={editItem.specialTag || ''}
                                 onChange={handleInputChange}
                             />
                         </>
@@ -267,7 +282,13 @@ const AdminItem = () => {
                         Cancel
                     </button>
                 </div>
-            )}
+            </Modal>
+            <ConfirmationModal
+                isOpen={showConfirm}
+                onClose={() => setShowConfirm(false)}
+                onConfirm={handleConfirmDelete}
+                message="Are you sure you want to delete this item?"
+            />
             <table className="min-w-full bg-white">
                 <thead>
                 <tr>
@@ -294,7 +315,7 @@ const AdminItem = () => {
                             </button>
                             <button
                                 className="px-4 py-2 bg-red-500 text-white rounded"
-                                onClick={() => handleDelete(item.id)}
+                                onClick={() => confirmDelete(item.id)}
                             >
                                 Delete
                             </button>

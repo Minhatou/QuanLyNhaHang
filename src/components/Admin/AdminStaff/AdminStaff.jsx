@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import ConfirmationModal from '../ConfirmationModal'; // Import the ConfirmationModal component
 
 const StaffList = () => {
     const [users, setUsers] = useState([]);
     const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 10;
+    const [showConfirm, setShowConfirm] = useState(false);
+    //const [userToDelete, setUserToDelete] = useState(null);
+    const [editUser, setEditUser] = useState(null);
+    const [showEditForm, setShowEditForm] = useState(false);
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -23,20 +28,8 @@ const StaffList = () => {
     }, []);
 
     const handleEdit = (user) => {
-        // Implement edit functionality here
-        console.log('Edit user:', user);
-    };
-
-    const handleRemove = async (userId) => {
-        const confirmDelete = window.confirm('Are you sure you want to delete this user?');
-        if (!confirmDelete) return;
-
-        try {
-            await axios.delete(`https://localhost:7001/api/User/${userId}`);
-            setUsers(users.filter(user => user.id !== userId));
-        } catch (error) {
-            console.error('Error deleting user:', error);
-        }
+        setEditUser(user);
+        setShowEditForm(true);
     };
 
     const handlePageChange = (pageNumber) => {
@@ -74,12 +67,6 @@ const StaffList = () => {
                             >
                                 Edit
                             </button>
-                            <button
-                                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-                                onClick={() => handleRemove(user.id)}
-                            >
-                                Remove
-                            </button>
                         </td>
                     </tr>
                 ))}
@@ -96,6 +83,60 @@ const StaffList = () => {
                     </button>
                 ))}
             </div>
+
+            <ConfirmationModal
+                isOpen={showConfirm}
+                onClose={() => setShowConfirm(false)}
+                onConfirm={() => {}}
+                message=""
+            />
+
+            {showEditForm && (
+                <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+                    <div className="bg-white p-6 rounded shadow-lg w-1/3">
+                        <h2 className="text-2xl font-bold mb-4">Edit User</h2>
+                        <input
+                            type="text"
+                            className="px-4 py-2 border rounded mt-2 w-full"
+                            placeholder="Name"
+                            value={editUser.name}
+                            onChange={(e) => setEditUser({ ...editUser, name: e.target.value })}
+                        />
+                        <input
+                            type="text"
+                            className="px-4 py-2 border rounded mt-2 w-full"
+                            placeholder="Username"
+                            value={editUser.userName}
+                            onChange={(e) => setEditUser({ ...editUser, userName: e.target.value })}
+                        />
+                        <select
+                            className="px-4 py-2 border rounded mt-2 w-full"
+                            value={editUser.role}
+                            onChange={(e) => setEditUser({ ...editUser, role: e.target.value })}
+                        >
+                            <option value="staff">Staff</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                        <div className="flex justify-end mt-4">
+                            <button
+                                className="px-4 py-2 bg-gray-500 text-white rounded mr-2"
+                                onClick={() => setShowEditForm(false)}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                className="px-4 py-2 bg-green-500 text-white rounded"
+                                onClick={() => {
+                                    // Implement save functionality here
+                                    setShowEditForm(false);
+                                }}
+                            >
+                                Save
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import {Link} from "react-router-dom";
-import backgroundNews from '../../images/news/background-news.jpg';
+import backgroundNews from '../../../images/news/background-news.jpg';
 
 const News = () => {
     const [latestNews, setLatestNews] = useState([]);

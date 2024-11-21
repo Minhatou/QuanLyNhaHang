@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import NotificationModal from '../../NotificationModal.jsx';
 
 const Cart = () => {
     const [cartItems, setCartItems] = useState([]);
@@ -11,6 +12,8 @@ const Cart = () => {
         city: '',
         state: ''
     });
+    const [showModal, setShowModal] = useState(false);
+    const [modalMessage, setModalMessage] = useState('');
     const storedUserId = localStorage.getItem('userID');
     const storedToken = localStorage.getItem('token');
     const storedUserRole = localStorage.getItem('role');
@@ -121,14 +124,19 @@ const Cart = () => {
                 }
             });
 
-            // Notify the user
-            alert('Transaction confirmed');
-
-            // Refresh the page
-            window.location.reload();
+            setModalMessage('Transaction confirmed');
+            setShowModal(true);
+            setTimeout(() => {
+                window.location.reload();
+            }, 3000);
         } catch (error) {
             console.error('Error confirming transaction:', error);
         }
+    };
+
+    const closeModal = () => {
+        setShowModal(false);
+        setModalMessage('');
     };
 
     return (
@@ -247,6 +255,9 @@ const Cart = () => {
                     Xác nhận thanh toán
                 </button>
             </div>
+            {showModal && (
+                <NotificationModal message={modalMessage} onClose={closeModal} />
+            )}
         </div>
     );
 };

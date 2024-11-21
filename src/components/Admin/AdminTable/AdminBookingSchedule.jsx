@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-const AdminReservationSchedule = () => {
+const AdminBookingSchedule = () => {
     const [bookings, setBookings] = useState([]);
     const [selectedBooking, setSelectedBooking] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -17,12 +17,14 @@ const AdminReservationSchedule = () => {
                         'Authorization': `Bearer ${storedToken}`
                     }
                 });
-                setBookings(response.data.result || []);
+                const filteredBookings = response.data.result.filter(booking =>
+                    ['Pending', 'Confirmed', 'CheckedIn', 'Occupied'].includes(booking.bookingStatus)
+                );
+                setBookings(filteredBookings);
             } catch (error) {
                 console.error('Error fetching bookings:', error);
             }
         };
-
         fetchBookings();
     }, [storedToken]);
 
@@ -47,12 +49,22 @@ const AdminReservationSchedule = () => {
 
     const handleStatusChange = async (bookingId, newStatus) => {
         try {
-            await axios.put(`https://localhost:7001/api/Booking/${bookingId}`, { bookingStatus: newStatus }, {
+            const payload = {
+                id: bookingId,
+                name: selectedBooking.name,
+                phoneNumber: selectedBooking.phoneNumber,
+                bookingDate: selectedBooking.bookingDate,
+                numberOfGuests: selectedBooking.numberOfGuests,
+                specialRequest: selectedBooking.specialRequest,
+                bookingStatus: newStatus
+            };
+            await axios.put(`https://localhost:7001/api/Booking/${bookingId}`, payload, {
                 headers: {
                     'Authorization': `Bearer ${storedToken}`
                 }
             });
             setBookings(bookings.map(booking => booking.id === bookingId ? { ...booking, bookingStatus: newStatus } : booking));
+            setSelectedBooking({ ...selectedBooking, bookingStatus: newStatus });
         } catch (error) {
             console.error('Error updating booking status:', error);
         }
@@ -138,6 +150,9 @@ const AdminReservationSchedule = () => {
                         >
                             <option value="Pending">Pending</option>
                             <option value="Confirmed">Confirmed</option>
+                            <option value="CheckedIn">CheckedIn</option>
+                            <option value="Occupied">Occupied</option>
+                            <option value="Completed">Completed</option>
                             <option value="Cancelled">Cancelled</option>
                         </select>
                         <button
@@ -153,4 +168,4 @@ const AdminReservationSchedule = () => {
     );
 };
 
-export default AdminReservationSchedule;
+export default AdminBookingSchedule;

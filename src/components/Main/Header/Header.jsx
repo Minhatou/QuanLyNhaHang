@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import logo from '../../images/header/restaurant-logo-removebg-preview-dark.png';
+import logo from '../../../images/header/restaurant-logo-removebg-preview-dark.png';
 import { Link, useNavigate } from "react-router-dom";
 
 function Header() {
@@ -44,9 +44,10 @@ function Header() {
                         SỰ KIỆN
                     </li>
                     <li className="nav-item white-button cursor-pointer"
-                        onClick={() => document.getElementById('reservation').scrollIntoView({behavior: 'smooth'})}>ĐẶT
+                        onClick={() => document.getElementById('booking').scrollIntoView({behavior: 'smooth'})}>ĐẶT
                         BÀN
                     </li>
+                        <Link to="/order" className="nav-item white-button cursor-pointer">ĐẶT HÀNG</Link>
                 </ul>
             </nav>
             <div className="icons flex space-x-1 md:space-x-2 relative mt-2 md:mt-0 text-xs md:text-sm">

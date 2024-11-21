@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import reservationImage from '../../images/reservation/table-restaurant-food-buffet-interior-design-restaurants-1376921-pxhere.com.jpg';
+import bookingImage from '../../../images/booking/table-restaurant-food-buffet-interior-design-restaurants-1376921-pxhere.com.jpg';
+import NotificationModal from '../../NotificationModal.jsx';
 
-const Reservation = () => {
+const Booking = () => {
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
     const [datetime, setDatetime] = useState('');
     const [quantity, setQuantity] = useState('');
     const [requests, setRequests] = useState('');
+    const [showModal, setShowModal] = useState(false);
+    const [modalMessage, setModalMessage] = useState('');
     const storedToken = localStorage.getItem('token');
 
     useEffect(() => {
@@ -31,16 +34,23 @@ const Reservation = () => {
                     'Authorization': `Bearer ${storedToken}`
                 },
             });
-            alert('Booking successful!');
+            setModalMessage('Booking successful!');
+            setShowModal(true);
         } catch (error) {
             console.error('Error creating booking:', error);
-            alert('Failed to create booking.');
+            setModalMessage('Failed to create booking.');
+            setShowModal(true);
         }
     };
 
+    const closeModal = () => {
+        setShowModal(false);
+        setModalMessage('');
+    };
+
     return (
-        <section id="reservation" className="w-full h-screen p-4 md:p-12 flex items-center justify-center text-left relative">
-            <img src={reservationImage} alt="Reservation" className="w-full h-full object-cover absolute inset-0 z-0" />
+        <section id="booking" className="w-full h-screen p-4 md:p-12 flex items-center justify-center text-left relative">
+            <img src={bookingImage} alt="Booking" className="w-full h-full object-cover absolute inset-0 z-0" />
             <div className="w-full md:w-2/5 bg-gray-950 bg-opacity-65 text-white p-6 md:p-10 relative z-10">
                 <h1 className="text-2xl md:text-3xl font-bold mb-4 md:mb-5">ĐẶT BÀN</h1>
                 <h2 className="text-xl md:text-2xl font-bold mb-4 md:mb-5">Thông tin đặt bàn</h2>
@@ -128,8 +138,11 @@ const Reservation = () => {
                     </div>
                 </form>
             </div>
+            {showModal && (
+                <NotificationModal message={modalMessage} onClose={closeModal} />
+            )}
         </section>
     );
 };
 
-export default Reservation;
+export default Booking;
